@@ -1,4 +1,4 @@
-module ff (clk, rst_n, d, q);
+module ff (clk, rst_n, d, ena, q);
     input clk;
     input rst_n;
     input ena,
