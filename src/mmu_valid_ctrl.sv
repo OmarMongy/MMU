@@ -4,7 +4,8 @@ input  logic        rst_n,
 
 input  logic        valid_in,
 input  logic [1:0]  op_code,
-
+  
+output logic        start_op,  
 output logic        valid_out
 );
 // Pipeline registers
@@ -39,4 +40,6 @@ always_comb begin
             default: valid_out = 1'b0;
         endcase
     end
+    
+ assign start_op = (valid_d1 & ~valid_out) | (valid_d2 & ~valid_out); 
 endmodule
