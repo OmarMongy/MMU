@@ -1,7 +1,7 @@
 module ff (clk, rst_n, d, ena, q);
     input clk;
     input rst_n;
-    input ena,
+    input ena;
     input [15:0] d;
     output reg [15:0] q;
 
