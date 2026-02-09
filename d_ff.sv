@@ -10,5 +10,7 @@ module ff (clk, rst_n, d, q);
             q <= 0; 
         else if (ena) 
             q <= d;
+        else 
+            q =< q;    
         end
 endmodule
