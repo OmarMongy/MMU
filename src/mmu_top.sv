@@ -13,7 +13,7 @@ module mmu_top (
     input  logic [15:0] mmu_bias [0:11][0:6],
     output logic [18:0] mmu_out  [0:6]
 );
-    wire sel_out;
+    wire flush;
     // ----------------------------
     // Flag controller
     // ----------------------------
@@ -22,7 +22,7 @@ module mmu_top (
         .rst_n     (rst_n),
         .valid_in  (valid_in),
         .op_code   (op_code),
-        .sel_out   (sel_out),
+        .flush     (flush),
         .valid_out (valid_out)
     );
 
@@ -32,8 +32,7 @@ module mmu_top (
     mmu mmu_datapath (
         .clk       (clk),
         .rst_n     (rst_n),
-        .sel       (sel_out),
-        .flush     (valid_out),
+        .flush     (flush),
         .mmu_in    (mmu_in),
         .mmu_w     (mmu_w),
         .mmu_bias  (mmu_bias),
