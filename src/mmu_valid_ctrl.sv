@@ -5,41 +5,56 @@ input  logic        rst_n,
 input  logic        valid_in,
 input  logic [1:0]  op_code,
   
-output logic        start_op,  
+output logic        sel_out,  
 output logic        valid_out
 );
 // Pipeline registers
 logic valid_d1;
 logic valid_d2;
-logic valid_d3;
-logic [1:0] op_code_reg1;
-logic [1:0] op_code_reg2;
- always@(posedge clk or negedge rst_n) begin 
+always_ff @(posedge clk or negedge rst_n) begin 
         if (!rst_n) begin
             valid_d1    <= 1'b0;
-            valid_d2    <= 1'b0;
-            valid_d3    <= 1'b0; 
-            op_code_reg1 <= 2'b00; 
-            op_code_reg2 <= 2'b00;          
+            valid_d2    <= 1'b0;     
         end else begin
-            valid_d1     <= valid_in;
-            op_code_reg1 <= op_code;
-            op_code_reg2 <= op_code_reg1;
-            valid_d2     <= valid_d1;
-            valid_d3     <= valid_d2;
+                if (valid_in) begin
+                    valid_d1    <= valid_in;
+                    valid_d2    <= valid_d1;
+            end
+                else begin
+                    valid_d1    <= 0;
+                    valid_d2    <= valid_d1;                    
+                end         
         end
     end
 
  // Output valid selection
-always_comb begin
-        case (op_code_reg2)
-            2'b00: valid_out = valid_d2; // 1-cycle latency
-            2'b01: valid_out = valid_d2; // 1-cycle latency
-            2'b10: valid_out = valid_d3; // 2-cycle latency
-            2'b11: valid_out = valid_d3; // 2-cycle latency
-            default: valid_out = 1'b0;
-        endcase
-    end
-    
- assign start_op = (valid_d1 & ~valid_out) | (valid_d2 & ~valid_out); 
+always_ff @(posedge clk or negedge rst_n) begin
+     if (!rst_n) begin
+         valid_out <= 1'b0;
+         sel_out   <= 1'b0;
+     end else begin
+         case (op_code)
+             2'b00,
+             2'b01: begin
+                 valid_out <= valid_d1;
+                 sel_out   <= 1'b0;
+             end
+ 
+             2'b10,
+             2'b11: begin
+                 sel_out <= 1'b1;
+                 if (valid_d2)
+                     valid_out <= ~valid_out;  // clean toggle
+                 else
+                     valid_out <= 1'b0;        // or hold, based on spec
+             end
+ 
+             default: begin
+                 valid_out <= 1'b0;
+                 sel_out   <= 1'b0;
+             end
+         endcase
+     end
+ end
+
 endmodule
