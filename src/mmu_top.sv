@@ -13,17 +13,16 @@ module mmu_top (
     input  logic [15:0] mmu_bias [0:11][0:6],
     output logic [18:0] mmu_out  [0:6]
 );
-    wire start_op;
-
+    wire sel_out;
     // ----------------------------
     // Flag controller
     // ----------------------------
-    mmu_flag_ctrl u_flag_ctrl (
+    mmu_valid_ctrl u_flag_ctrl (
         .clk       (clk),
         .rst_n     (rst_n),
         .valid_in  (valid_in),
         .op_code   (op_code),
-        .start_op  (start_op),
+        .sel_out   (sel_out),
         .valid_out (valid_out)
     );
 
@@ -33,7 +32,8 @@ module mmu_top (
     mmu mmu_datapath (
         .clk       (clk),
         .rst_n     (rst_n),
-        .en        (start_op),
+        .sel       (sel_out),
+        .flush     (valid_out),
         .mmu_in    (mmu_in),
         .mmu_w     (mmu_w),
         .mmu_bias  (mmu_bias),
