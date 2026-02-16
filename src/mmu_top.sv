@@ -4,7 +4,8 @@ module mmu_top (
 
     // Control
     input  logic       valid_in,
-    input  logic [1:0] op_code,
+    input  logic [2:0] op_code,
+    input  logic [1:0] stage,
     output logic       valid_out,
 
     // MMU data
@@ -22,6 +23,7 @@ module mmu_top (
         .rst_n     (rst_n),
         .valid_in  (valid_in),
         .op_code   (op_code),
+        .stage      (stage),
         .flush     (flush),
         .valid_out (valid_out)
     );
