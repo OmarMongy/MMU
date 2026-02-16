@@ -25,8 +25,6 @@ logic [6:0] count_mod;
 logic [6:0] counter;
 logic       busy;
 logic       valid_d;          // 1-cycle delayed input => streaming cases
-logic [2:0] op_latched;
-logic [1:0] st_latched;
 // 1-cycle streaming path (conv or QxKT)
 always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n)
@@ -52,11 +50,10 @@ always_ff @(posedge clk or negedge rst_n) begin
         counter     <= 0;
         busy        <= 0;
         valid_out   <= 0;
-        op_latched  <= 0;
-        st_latched  <= 0;
     end 
     else begin
         valid_out <= 0;
+        if (valid_in) begin
         // Streaming mode -> conv and QxKT
         if (op_code == 3'd0 || op_code == 3'd2) begin
             valid_out <= valid_d;  // 1-cycle delay
@@ -69,8 +66,6 @@ always_ff @(posedge clk or negedge rst_n) begin
                 valid_out <= 1;
                 if (valid_in) begin
                     counter    <= 0;
-                    op_latched <= op_code;
-                    st_latched <= stage;
                     busy       <= 1;
                 end
                 else begin
@@ -84,8 +79,7 @@ always_ff @(posedge clk or negedge rst_n) begin
             else if (valid_in) begin
                 busy       <= 1;
                 counter    <= 0;
-                op_latched <= op_code;
-                st_latched <= stage;
+                end
             end
         end
     end
