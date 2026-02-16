@@ -23,7 +23,7 @@ module mmu_top (
         .rst_n     (rst_n),
         .valid_in  (valid_in),
         .op_code   (op_code),
-        .stage      (stage),
+        .stage     (stage),
         .flush     (flush),
         .valid_out (valid_out)
     );
