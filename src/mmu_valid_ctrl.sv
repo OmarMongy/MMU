@@ -52,6 +52,7 @@ always_ff @(posedge clk or negedge rst_n) begin
         valid_out   <= 0;
     end 
     else begin
+        counter   <= 0;
         valid_out <= 0;
         if (valid_in) begin
         // Streaming mode -> conv and QxKT
@@ -64,6 +65,7 @@ always_ff @(posedge clk or negedge rst_n) begin
             // FINISH!! condition
             if (busy && counter == count_mod-1) begin
                 valid_out <= 1;
+                counter   <= 0;
                 if (valid_in) begin
                     counter    <= 0;
                     busy       <= 1;
